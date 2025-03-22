@@ -82,6 +82,7 @@
         const [montoPago, setMontoPago] = React.useState("");
         const [statusMessage, setStatusMessage] = React.useState("");
         const [copied, setCopied] = React.useState(false);
+        const [showPaymentOptions, setShowPaymentOptions] = React.useState(false);
 
         const handlePaymentSubmit = async (e) => {
           e.preventDefault();
@@ -91,20 +92,38 @@
             return;
           }
           
+          if (!montoPago || montoPago <= 0) {
+            setStatusMessage("Por favor ingresa un monto válido");
+            return;
+          }
+          
           try {
             await navigator.clipboard.writeText(aliasRemisero);
             setCopied(true);
-            setStatusMessage(`¡Alias copiado! Abriendo Mercado Pago...`);
+            setStatusMessage(`¡Alias copiado! Selecciona cómo deseas continuar con el pago`);
             
-            setTimeout(() => {
-              window.location.href = `mercadopago://`;
-            }, 1500);
+            // Mostrar opciones de pago
+            setShowPaymentOptions(true);
             
-            setTimeout(() => setCopied(false), 3000);
           } catch (err) {
             console.error("Error:", err);
             setStatusMessage("Error al copiar el alias. Intenta nuevamente.");
           }
+        };
+
+        const openMercadoPagoApp = () => {
+          // Intentar abrir la app de Mercado Pago
+          window.location.href = `mercadopago://`;
+          
+          // Después de un breve delay, verificar si se pudo abrir la app
+          setTimeout(() => {
+            // Si no se pudo abrir la app, redirigir a la web
+            window.location.href = 'https://www.mercadopago.com.ar';
+          }, 2500);
+        };
+
+        const openMercadoPagoWeb = () => {
+          window.open('https://www.mercadopago.com.ar', '_blank');
         };
 
         return (
@@ -267,6 +286,26 @@
                       copied ? 'bg-green-800' : 'bg-yellow-600'
                     }`}>
                       {statusMessage}
+                    </div>
+                  )}
+
+                  {showPaymentOptions && (
+                    <div className="mt-6 space-y-4">
+                      <button
+                        onClick={openMercadoPagoApp}
+                        className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center"
+                      >
+                        <span className="mr-2">Abrir App Mercado Pago</span>
+                        <span className="text-xl">📱</span>
+                      </button>
+                      
+                      <button
+                        onClick={openMercadoPagoWeb}
+                        className="w-full bg-gray-600 text-white py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors flex items-center justify-center"
+                      >
+                        <span className="mr-2">Ir a Web Mercado Pago</span>
+                        <span className="text-xl">🌐</span>
+                      </button>
                     </div>
                   )}
                 </div>
