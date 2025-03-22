@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>San Luis Rides - Servicio Premium de Remises</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- React y ReactDOM -->
+    <script src="https://unpkg.com/react@18.2.0/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+      body {
+        font-family: 'Poppins', sans-serif;
+      }
+      
+      html {
+        scroll-behavior: smooth;
+      }
+      
+      section {
+        scroll-margin-top: 80px;
+      }
+      
+      .glass-effect {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      
+      .gradient-text {
+        background: linear-gradient(135deg, #FFD700, #FFA500);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      
+      .hero-gradient {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d3748 100%);
+      }
+      
+      .card-hover {
+        transition: all 0.3s ease;
+      }
+      
+      .card-hover:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      }
+    </style>
+  </head>
+  <body class="bg-gray-900 text-gray-100">
+    <div id="root"></div>
+
+    <script type="text/babel">
+      // Lista de remiseros actualizada
+      const REMISEROS_LIST = [
+        { name: "Juan Pérez", alias: "remiJuan23", rating: "4.9 ⭐" },
+        { name: "María Sánchez", alias: "remiMaria10", rating: "4.8 ⭐" },
+        { name: "Carlos López", alias: "remiCarlos", rating: "4.9 ⭐" },
+        { name: "Ana Rodríguez", alias: "remiAna45", rating: "5.0 ⭐" },
+        { name: "Roberto Gómez", alias: "remiRoberto", rating: "4.7 ⭐" },
+        { name: "Laura Martínez", alias: "remiLaura", rating: "4.8 ⭐" }
+      ];
+      // Función para scroll suave
+      const scrollToSection = (sectionId) => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      };
+
+      function App() {
+        const [aliasRemisero, setAliasRemisero] = React.useState(REMISEROS_LIST[0]?.alias || "");
+        const [montoPago, setMontoPago] = React.useState("");
+        const [statusMessage, setStatusMessage] = React.useState("");
+        const [copied, setCopied] = React.useState(false);
+
+        const handlePaymentSubmit = async (e) => {
+          e.preventDefault();
+          
+          if (!aliasRemisero) {
+            setStatusMessage("Por favor selecciona un remisero");
+            return;
+          }
+          
+          try {
+            await navigator.clipboard.writeText(aliasRemisero);
+            setCopied(true);
+            setStatusMessage(`¡Alias copiado! Abriendo Mercado Pago...`);
+            
+            setTimeout(() => {
+              window.location.href = `mercadopago://`;
+            }, 1500);
+            
+            setTimeout(() => setCopied(false), 3000);
+          } catch (err) {
+            console.error("Error:", err);
+            setStatusMessage("Error al copiar el alias. Intenta nuevamente.");
+          }
+        };
+
+        return (
+          <>
+            {/* Navbar */}
+            <nav className="fixed w-full z-50 glass-effect">
+              <div className="container mx-auto px-6 py-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <span className="text-3xl">🚖</span>
+                    <span className="ml-2 text-xl font-bold gradient-text">San Luis Rides</span>
+                  </div>
+                  <div className="hidden md:flex space-x-8">
+                    <button onClick={() => scrollToSection('inicio')} 
+                            className="hover:text-yellow-400 transition-colors">
+                      Inicio
+                    </button>
+                    <button onClick={() => scrollToSection('servicios')} 
+                            className="hover:text-yellow-400 transition-colors">
+                      Servicios
+                    </button>
+                    <button onClick={() => scrollToSection('pago')} 
+                            className="hover:text-yellow-400 transition-colors">
+                      Pagar
+                    </button>
+                    <button onClick={() => scrollToSection('contacto')} 
+                            className="hover:text-yellow-400 transition-colors">
+                      Contacto
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </nav>
+
+            {/* Hero Section */}
+            <section id="inicio" className="hero-gradient min-h-screen flex items-center justify-center pt-20">
+              <div className="container mx-auto px-6 text-center">
+                <h1 className="text-5xl md:text-7xl font-bold mb-8 gradient-text">
+                  Viajá con estilo en San Luis
+                </h1>
+                <p className="text-xl md:text-2xl mb-12 text-gray-300 max-w-3xl mx-auto">
+                  Servicio premium de remises las 24 horas. Viajes seguros, confortables y puntuales.
+                </p>
+                <div className="flex flex-wrap justify-center gap-6">
+                  <button
+                    onClick={() => scrollToSection('pago')}
+                    className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-gray-900 px-8 py-4 rounded-full text-lg font-semibold hover:opacity-90 transition-opacity"
+                  >
+                    Reservar Ahora
+                  </button>
+                  <button
+                    onClick={() => scrollToSection('servicios')}
+                    className="bg-transparent border-2 border-yellow-500 text-yellow-500 px-8 py-4 rounded-full text-lg font-semibold hover:bg-yellow-500 hover:text-gray-900 transition-all"
+                  >
+                    Conocé más
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            {/* Servicios */}
+            <section id="servicios" className="py-20 bg-gray-800">
+              <div className="container mx-auto px-6">
+                <h2 className="text-4xl font-bold text-center mb-16 gradient-text">
+                  Nuestros Servicios Premium
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+                  <div className="bg-gray-900 rounded-2xl p-8 card-hover">
+                    <div className="text-5xl mb-6">🏙️</div>
+                    <h3 className="text-2xl font-semibold mb-4 text-yellow-400">
+                      Viajes Urbanos
+                    </h3>
+                    <p className="text-gray-400 leading-relaxed">
+                      Traslados rápidos y seguros dentro de la ciudad. Choferes expertos que conocen cada rincón.
+                    </p>
+                  </div>
+                  
+                  <div className="bg-gray-900 rounded-2xl p-8 card-hover">
+                    <div className="text-5xl mb-6">✈️</div>
+                    <h3 className="text-2xl font-semibold mb-4 text-yellow-400">
+                      Traslados Especiales
+                    </h3>
+                    <p className="text-gray-400 leading-relaxed">
+                      Servicios al aeropuerto, eventos especiales y viajes corporativos con la máxima comodidad.
+                    </p>
+                  </div>
+                  
+                  <div className="bg-gray-900 rounded-2xl p-8 card-hover">
+                    <div className="text-5xl mb-6">🌟</div>
+                    <h3 className="text-2xl font-semibold mb-4 text-yellow-400">
+                      Servicio VIP
+                    </h3>
+                    <p className="text-gray-400 leading-relaxed">
+                      Experiencia premium con vehículos de alta gama y atención personalizada las 24 horas.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Sección de Pago */}
+            <section id="pago" className="py-20 bg-gray-900">
+              <div className="container mx-auto px-6">
+                <h2 className="text-4xl font-bold text-center mb-8 gradient-text">
+                  Realiza tu pago
+                </h2>
+                <p className="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
+                  Selecciona tu remisero y especifica el monto. Te ayudamos a procesar tu pago de forma rápida y segura.
+                </p>
+                
+                <div className="max-w-2xl mx-auto bg-gray-800 rounded-2xl p-8 shadow-xl">
+                  <form onSubmit={handlePaymentSubmit} className="space-y-6">
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                          Selecciona tu Remisero
+                        </label>
+                        <select
+                          value={aliasRemisero}
+                          onChange={(e) => setAliasRemisero(e.target.value)}
+                          className="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-3 focus:ring-2 focus:ring-yellow-500"
+                          required
+                        >
+                          {REMISEROS_LIST.map((remisero) => (
+                            <option key={remisero.alias} value={remisero.alias}>
+                              {remisero.name} - {remisero.rating}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                          Monto a Pagar
+                        </label>
+                        <input
+                          type="number"
+                          value={montoPago}
+                          onChange={(e) => setMontoPago(e.target.value)}
+                          placeholder="Ej: 1500"
+                          className="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-3 focus:ring-2 focus:ring-yellow-500"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 text-gray-900 py-4 rounded-lg font-semibold hover:opacity-90 transition-opacity flex items-center justify-center"
+                    >
+                      <span className="mr-2">Pagar con Mercado Pago</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                    </button>
+                  </form>
+
+                  {statusMessage && (
+                    <div className={`mt-4 p-4 rounded-lg text-center ${
+                      copied ? 'bg-green-800' : 'bg-yellow-600'
+                    }`}>
+                      {statusMessage}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </section>
+             {/* Sección de Contacto */}
+             <section id="contacto" className="py-20 bg-gray-900">
+              <div className="container mx-auto px-6">
+                <h2 className="text-4xl font-bold text-center mb-8 gradient-text">
+                  Contactanos
+                </h2>
+                <div className="max-w-2xl mx-auto bg-gray-800 rounded-2xl p-8 shadow-xl">
+                  <form className="space-y-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Nombre
+                      </label>
+                      <input
+                        type="text"
+                        className="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-3 focus:ring-2 focus:ring-yellow-500"
+                        required
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Teléfono
+                      </label>
+                      <input
+                        type="tel"
+                        className="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-3 focus:ring-2 focus:ring-yellow-500"
+                        required
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Mensaje
+                      </label>
+                      <textarea
+                        rows="4"
+                        className="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-3 focus:ring-2 focus:ring-yellow-500"
+                        required
+                      ></textarea>
+                    </div>
+                    
+                    <button
+                      type="submit"
+                      className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 text-gray-900 py-4 rounded-lg font-semibold hover:opacity-90 transition-opacity"
+                    >
+                      Enviar Mensaje
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </section>
+
+            {/* Footer */}
+            <footer className="bg-gray-800 text-gray-400">
+              <div className="container mx-auto px-6 py-12">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  <div>
+                    <h3 className="text-2xl font-bold text-white mb-4">San Luis Rides</h3>
+                    <p className="mb-4">Tu servicio premium de remises en San Luis.</p>
+                    <div className="flex space-x-4">
+                      <a href="#" className="text-gray-400 hover:text-yellow-400">
+                        <span className="text-2xl">📱</span>
+                      </a>
+                      <a href="#" className="text-gray-400 hover:text-yellow-400">
+                        <span className="text-2xl">📧</span>
+                      </a>
+                      <a href="#" className="text-gray-400 hover:text-yellow-400">
+                        <span className="text-2xl">📍</span>
+                      </a>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h3 className="text-xl font-semibold text-white mb-4">Contacto</h3>
+                    <p className="mb-2">📞 (266) 123-4567</p>
+                    <p className="mb-2">📧 info@sanluisrides.com</p>
+                    <p>🏢 San Luis, Argentina</p>
+                  </div>
+                  
+                  <div>
+                    <h3 className="text-xl font-semibold text-white mb-4">Horarios</h3>
+                    <p className="mb-2">Lunes a Domingo</p>
+                    <p className="text-yellow-400 font-semibold">24 horas</p>
+                  </div>
+                </div>
+                
+                <div className="border-t border-gray-700 mt-12 pt-8 text-center">
+                  <p>© {new Date().getFullYear()} San Luis Rides. Todos los derechos reservados.</p>
+                </div>
+              </div>
+            </footer>
+          </>
+        );
+      }
+
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      root.render(<App />);
+    </script>
+  </body>
+</html>
