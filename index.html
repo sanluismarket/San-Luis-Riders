@@ -116,43 +116,60 @@
           }
         };
 
+        // Función mejorada para abrir Mercado Pago
         const openMercadoPagoApp = () => {
-          const mpScheme = 'mercadopago://';
-          const webFallback = 'https://www.mercadopago.com.ar';
-          
-          if (isMobile()) {
-            // En iOS
-            if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-              window.location.href = mpScheme;
-              
-              // Si después de 2.5 segundos no se abrió la app, redirigir a la web
-              setTimeout(() => {
-                window.location.href = webFallback;
-              }, 2500);
-            } 
-            // En Android
-            else if (/Android/i.test(navigator.userAgent)) {
-              const iframe = document.createElement('iframe');
-              iframe.style.display = 'none';
-              iframe.src = mpScheme;
-              document.body.appendChild(iframe);
-              
-              // Si después de 2.5 segundos no se abrió la app, redirigir a la web
-              setTimeout(() => {
-                window.location.href = webFallback;
-                document.body.removeChild(iframe);
-              }, 2500);
-            }
-            // Otros dispositivos móviles
-            else {
-              window.location.href = webFallback;
-            }
-          } else {
-            // Si no es móvil, abrir directamente la web
-            window.open(webFallback, '_blank');
+          // URLs y esquemas de Mercado Pago
+          const mpSchemes = {
+            android: {
+              app: 'mercadopago://home',
+              intent: 'intent://home#Intent;package=com.mercadopago.wallet;scheme=mercadopago;end',
+              playStore: 'market://details?id=com.mercadopago.wallet',
+            },
+            ios: {
+              app: 'mercadopago://',
+              appStore: 'https://apps.apple.com/ar/app/mercado-pago/id925436649',
+            },
+            web: 'https://www.mercadopago.com.ar'
+          };
+
+          // Detectar plataforma
+          const ua = navigator.userAgent.toLowerCase();
+          const isAndroid = ua.indexOf("android") > -1;
+          const isIOS = /iphone|ipad|ipod/.test(ua);
+
+          // Función para manejar fallback
+          const handleFallback = (fallbackUrl) => {
+            setTimeout(() => {
+              // Si la app no se abrió después de 2.5 segundos, redirigir
+              if (document.hidden) {
+                return; // La app se abrió exitosamente
+              }
+              window.location.href = fallbackUrl;
+            }, 2500);
+          };
+
+          // Manejar según plataforma
+          if (isAndroid) {
+            // Intentar abrir con Intent
+            window.location.href = mpSchemes.android.intent;
+            
+            // Fallback a Play Store
+            handleFallback(mpSchemes.android.playStore);
+          } 
+          else if (isIOS) {
+            // Intentar abrir la app
+            window.location.href = mpSchemes.ios.app;
+            
+            // Fallback a App Store
+            handleFallback(mpSchemes.ios.appStore);
+          } 
+          else {
+            // Si no es móvil o no se puede detectar la plataforma, abrir la web
+            window.location.href = mpSchemes.web;
           }
         };
 
+        // Función para abrir Mercado Pago directamente en el navegador
         const openMercadoPagoWeb = () => {
           window.open('https://www.mercadopago.com.ar', '_blank');
         };
